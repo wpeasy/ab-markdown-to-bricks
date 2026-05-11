@@ -1,0 +1,30 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude Code (local-machine settings)
+.claude/settings.local.json
+
+# WordPress / PHP
+*.log
+.env
+.env.local
+
+# Composer (if added later)
+/vendor/
+composer.lock
+
+# Node / build (if added later)
+/node_modules/
+/assets/dist/
+
+# Plugin packaging
+/*.zip
