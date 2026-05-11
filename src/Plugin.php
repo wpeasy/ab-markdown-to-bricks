@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace AB\MarkdownToBricks;
 
+use AB\MarkdownToBricks\Admin\BricksCheck;
 use AB\MarkdownToBricks\CPT\Markdown;
 
 defined('ABSPATH') || exit;
@@ -24,6 +25,10 @@ final class Plugin {
      */
     public static function init(): void {
         Markdown::init();
+
+        if (is_admin()) {
+            BricksCheck::init();
+        }
 
         add_action('init', [self::class, 'load_textdomain']);
     }
