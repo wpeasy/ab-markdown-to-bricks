@@ -11,19 +11,20 @@ Editors work in plain Markdown; designers work in Bricks. The plugin is the brid
 
 ## Status
 
-Early development. Currently registers the `abmtb_markdown` custom post type under the Bricks admin menu. Markdown parsing, label mapping, dynamic tokens, and query loops are not yet implemented.
+Early development. Registers a top-level **Markdown Parser** admin menu, uploads and parses `.md` files, and lets editors map heading levels to labels. The Bricks (and Gutenberg) integrations that consume the parsed labels are not yet implemented.
 
 ## Requirements
 
 - WordPress 6.5+
 - PHP 8.0+
-- [Bricks Builder](https://bricksbuilder.io/) (for dynamic tokens + query loops)
+
+[Bricks Builder](https://bricksbuilder.io/) is optional. When Bricks is active, the plugin will expose labels as Dynamic Tokens and Query Loops. Without Bricks, the same data will be available via standard WordPress shortcodes (planned).
 
 ## Installation
 
 1. Clone or download into `wp-content/plugins/ab-markdown-to-bricks`.
 2. Activate **Markdown to Bricks** in **Plugins**.
-3. Find the new **Markdown** entry under the Bricks admin menu.
+3. Find the new **Markdown Parser** entry in the WordPress admin menu.
 
 ## Project documentation
 
