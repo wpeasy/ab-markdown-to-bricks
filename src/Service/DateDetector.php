@@ -72,20 +72,61 @@ final class DateDetector {
     }
 
     /**
+     * Matching bracket pairs that should be stripped along with the date
+     * when the date is wrapped in them. Order is not significant.
+     */
+    private const BRACKET_PAIRS = [
+        ['(', ')'],
+        ['[', ']'],
+        ['{', '}'],
+        ['<', '>'],
+    ];
+
+    /**
      * Remove a previously-matched date substring from a heading and tidy up
      * the leftover whitespace and adjacent punctuation.
      *
-     * Example: ("Release 2024-01-15: hotfix", "2024-01-15") → "Release: hotfix"
+     * If the date is wrapped in a matching bracket pair — `(2024-01-15)`,
+     * `[2024-01-15]`, `{2024-01-15}`, `<2024-01-15>` — the brackets are
+     * stripped along with the date so we don't leave behind empty `()` /
+     * `[]` shells.
+     *
+     * Examples:
+     *   ("Release 2024-01-15: hotfix", "2024-01-15") → "Release: hotfix"
+     *   ("Release (2024-01-15) hotfix", "2024-01-15") → "Release hotfix"
+     *   ("Release [2024-01-15]", "2024-01-15") → "Release"
      */
     public static function strip(string $text, string $match): string {
         if ($match === '') {
             return $text;
         }
-        $clean = str_replace($match, '', $text);
-        $clean = (string) preg_replace('/\s+/', ' ', $clean);
-        $clean = trim($clean);
+
+        $quoted = preg_quote($match, '/');
+
+        // Try each bracket pair first; if the date is wrapped in any of
+        // them, remove the brackets together with the date so we don't
+        // leave behind empty `()` shells.
+        foreach (self::BRACKET_PAIRS as [$open, $close]) {
+            $pattern = '/' . preg_quote($open, '/') . '\s*' . $quoted . '\s*' . preg_quote($close, '/') . '/';
+            if (preg_match($pattern, $text)) {
+                $clean = (string) preg_replace($pattern, '', $text, 1);
+                return self::tidy($clean);
+            }
+        }
+
+        // No surrounding brackets — strip the bare date substring.
+        $clean = (string) preg_replace('/' . $quoted . '/', '', $text, 1);
+        return self::tidy($clean);
+    }
+
+    /**
+     * Whitespace + adjacent-punctuation cleanup applied after any strip path.
+     */
+    private static function tidy(string $text): string {
+        $text = (string) preg_replace('/\s+/', ' ', $text);
+        $text = trim($text);
         // Trim punctuation that commonly sits next to a date ("2024 -" / "- 2024" etc.).
-        $clean = (string) preg_replace('/^[\-:,;.\s]+|[\-:,;.\s]+$/', '', $clean);
-        return $clean;
+        $text = (string) preg_replace('/^[\-:,;.\s]+|[\-:,;.\s]+$/', '', $text);
+        return $text;
     }
 }

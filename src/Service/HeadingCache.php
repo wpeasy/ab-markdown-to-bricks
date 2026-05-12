@@ -39,11 +39,14 @@ final class HeadingCache {
     public const META_KEY = '_abmtb_parsed_cache';
 
     /**
-     * Bumped whenever HeadingParser's output shape changes (new fields,
-     * removed fields, etc.). Causes every persisted cache to rebuild lazily
-     * on the next read after a plugin upgrade.
+     * Bumped whenever HeadingParser's output changes — either the shape
+     * (new / removed fields) or the meaning of an existing field. Causes
+     * every persisted cache to rebuild lazily on the next read after a
+     * plugin upgrade.
+     *
+     * 2: text_clean now also strips wrapping brackets around dates.
      */
-    private const VERSION = 1;
+    private const VERSION = 2;
 
     /**
      * Per-request memoisation. Keyed by post_id.

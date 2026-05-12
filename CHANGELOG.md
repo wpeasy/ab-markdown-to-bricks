@@ -2,6 +2,17 @@
 
 All notable changes to **Markdown to Bricks** are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.1.2] - 2026-05-13
+
+### Added
+- **Two-stage upload status.** The upload button now shows `Uploading…` while the file body is in flight, then flips to `Parsing…` the moment the server takes over (driven by `XMLHttpRequest.upload.load`). Replaces the single `Uploading…` state.
+
+### Changed
+- **Date strip removes wrapping brackets.** When a date is detected and stripped from a heading title, surrounding `(…)`, `[…]`, `{…}`, or `<…>` brackets are removed too — no more empty `()` shells.
+  - `## Release (2024-01-15) hotfix` → `Release hotfix`
+  - `## v0.1.99 [2024-01-15]` → `v0.1.99`
+- `HeadingCache::VERSION` bumped to `2` so existing posts re-parse on next read and pick up the new strip behaviour. No user action needed.
+
 ## [0.1.1] - 2026-05-12
 
 First substantial release. Initial scaffold (0.1.0) had only the empty CPT registration; this release ships the full upload → parse → label → output pipeline for both Bricks Builder and WordPress shortcodes.

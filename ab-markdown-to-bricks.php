@@ -3,7 +3,7 @@
  * Plugin Name:       Markdown to Bricks
  * Plugin URI:        https://wpeasy.au/
  * Description:       Upload a Markdown file, parse its headings, and expose the parsed data to Bricks Builder via Dynamic Tokens and Query Loops.
- * Version:           0.1.1
+ * Version:           0.1.2
  * Requires at least: 6.5
  * Requires PHP:      8.0
  * Author:            Alan Blair
@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 defined('ABSPATH') || exit;
 
-define('ABMTB_VERSION', '0.1.1');
+define('ABMTB_VERSION', '0.1.2');
 define('ABMTB_PLUGIN_FILE', __FILE__);
 define('ABMTB_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('ABMTB_PLUGIN_URL', plugin_dir_url(__FILE__));

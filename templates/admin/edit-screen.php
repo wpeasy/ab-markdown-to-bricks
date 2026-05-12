@@ -27,7 +27,8 @@ $abmtb_date_format_options = \AB\MarkdownToBricks\Admin\EditScreen::date_format_
             @click="$refs.fileInput.click()"
             :disabled="uploading"
         >
-            <span x-show="uploading"><?php esc_html_e('Uploading…', 'ab-markdown-to-bricks'); ?></span>
+            <span x-show="uploading && uploadStatus === 'uploading'"><?php esc_html_e('Uploading…', 'ab-markdown-to-bricks'); ?></span>
+            <span x-show="uploading && uploadStatus === 'parsing'"><?php esc_html_e('Parsing…', 'ab-markdown-to-bricks'); ?></span>
             <span x-show="!uploading && !markdown"><?php esc_html_e('Upload .md File', 'ab-markdown-to-bricks'); ?></span>
             <span x-show="!uploading && markdown"><?php esc_html_e('Replace .md File', 'ab-markdown-to-bricks'); ?></span>
         </button>

@@ -52,6 +52,7 @@
             headings: [],
             levelSettings: {},
             uploading: false,
+            uploadStatus: '', // '' | 'uploading' | 'parsing'
             savingLevels: false,
             editingSource: false,
             savingSource: false,
@@ -231,20 +232,44 @@
                 formData.append('file', file);
 
                 this.uploading = true;
+                this.uploadStatus = 'uploading';
                 this.editingSource = false;
+
+                // XHR (not fetch) so we can listen for upload completion via
+                // xhr.upload.onload and flip the UI to "Parsing…" the moment
+                // the body is fully sent — i.e. when the server takes over.
                 try {
-                    const res = await fetch(
-                        window.ABMTB.apiUrl + '/posts/' + window.ABMTB.postId + '/markdown',
-                        {
-                            method: 'POST',
-                            headers: { 'X-WP-Nonce': window.ABMTB.nonce },
-                            body: formData,
-                        }
-                    );
-                    const json = await res.json().catch(() => ({}));
-                    if (!res.ok || !json.success) {
-                        throw new Error(json.error || 'Upload failed');
-                    }
+                    const json = await new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open(
+                            'POST',
+                            window.ABMTB.apiUrl + '/posts/' + window.ABMTB.postId + '/markdown'
+                        );
+                        xhr.setRequestHeader('X-WP-Nonce', window.ABMTB.nonce);
+
+                        xhr.upload.addEventListener('load', () => {
+                            // Body fully sent — server is parsing now.
+                            this.uploadStatus = 'parsing';
+                        });
+                        xhr.upload.addEventListener('error', () => {
+                            reject(new Error('Upload network error'));
+                        });
+
+                        xhr.addEventListener('load', () => {
+                            let parsed = {};
+                            try { parsed = JSON.parse(xhr.responseText); } catch (_) {}
+                            if (xhr.status >= 200 && xhr.status < 300 && parsed.success) {
+                                resolve(parsed);
+                            } else {
+                                reject(new Error(parsed.error || 'Upload failed'));
+                            }
+                        });
+                        xhr.addEventListener('error', () => reject(new Error('Network error')));
+                        xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+
+                        xhr.send(formData);
+                    });
+
                     this.markdown = json.data.markdown;
                     this.headings = json.data.headings;
                     this.hydrateLevelSettings(json.data.levelSettings || this.levelSettings);
@@ -253,6 +278,7 @@
                     this.showToast('error', err.message || 'Upload failed');
                 } finally {
                     this.uploading = false;
+                    this.uploadStatus = '';
                     input.value = '';
                 }
             },
