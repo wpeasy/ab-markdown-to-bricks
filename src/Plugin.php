@@ -10,8 +10,12 @@ declare(strict_types=1);
 
 namespace AB\MarkdownToBricks;
 
-use AB\MarkdownToBricks\Admin\BricksCheck;
+use AB\MarkdownToBricks\Admin\EditScreen;
+use AB\MarkdownToBricks\Bricks\Integration as BricksIntegration;
 use AB\MarkdownToBricks\CPT\Markdown;
+use AB\MarkdownToBricks\REST\MarkdownController;
+use AB\MarkdownToBricks\Service\HeadingCache;
+use AB\MarkdownToBricks\Shortcodes\ShortcodesController;
 
 defined('ABSPATH') || exit;
 
@@ -25,9 +29,13 @@ final class Plugin {
      */
     public static function init(): void {
         Markdown::init();
+        HeadingCache::init();
+        MarkdownController::init();
+        ShortcodesController::init();
+        BricksIntegration::init();
 
         if (is_admin()) {
-            BricksCheck::init();
+            EditScreen::init();
         }
 
         add_action('init', [self::class, 'load_textdomain']);

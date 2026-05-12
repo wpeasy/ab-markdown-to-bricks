@@ -1,11 +1,41 @@
 # Bricks Builder Integration Notes
 
-This plugin does **not** inject UI into the Bricks Builder editor. It integrates with Bricks purely server-side, by:
+This plugin does **not** inject JS into the Bricks Builder editor. It integrates with Bricks purely server-side, by:
 
-1. Registering **Dynamic Tags** (so users can write `{abmtb_section_title}` in any Bricks element).
-2. Registering **custom Query Loop types** (so users can loop over parsed heading data inside Bricks).
+1. Registering a custom **Query Loop type** (`markdown`) so users can loop over parsed headings.
+2. Registering **Dynamic Tags** (`{md-title}`, `{md-description}`, `{md-date}`) that resolve per loop iteration.
 
-Everything below is about those two integrations. State-of-the-builder, Vue access, iframe communication etc. are not in scope.
+State-of-the-builder, Vue access, iframe communication etc. are not in scope.
+
+## Hard-won lessons from wiring this up
+
+These are things the Bricks docs don't say out loud — figured out by reading `themes/bricks/includes/elements/base.php` and `query.php`:
+
+### 1. You cannot add controls *inside* the Query popup
+
+The Query control (`'type' => 'query'`) is a self-contained Vue component. The dropdowns and inputs it shows when you pick a Type are **hardcoded** in the builder JS. There is no PHP filter that lets you inject controls inside that popup. Custom Query Type fields must live on the **element's own control panel**, outside the popup.
+
+### 2. `required` supports nested keys AND array values
+
+```php
+// ✓ Nested key via dot path — works.
+'required' => ['query.objectType', '=', 'markdown'],
+
+// ✓ Array value means "any of these" — works.
+'required' => ['query.objectType', '=', ['markdown_topic', 'markdown_section']],
+```
+
+Bricks doesn't *show* these features prominently in core element files (most controls gate on top-level settings), but the builder JS evaluator splits `key.path` and treats array values as set membership. So we use them freely to scope per-type controls.
+
+### 3. Loop-builder controls are scoped to specific elements
+
+`get_loop_builder_controls()` is added in `set_controls()` of each element that supports loops — Container, Block, Div, Section (and a few specialised elements like Map). The `bricks/elements/<name>/controls` filter fires *after* `set_controls()`, so our custom controls go alongside `hasLoop` / `query`. Target every layout element that hosts a loop:
+
+```php
+foreach (['section', 'container', 'block', 'div'] as $element) {
+    add_filter("bricks/elements/{$element}/controls", [self::class, 'add_controls']);
+}
+```
 
 ---
 

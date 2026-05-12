@@ -1,0 +1,532 @@
+/* Hide the Alpine cloaked root until the component is initialised. */
+[x-cloak] {
+    display: none !important;
+}
+
+.abmtb-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Toolbar */
+.abmtb-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+}
+
+.abmtb-file-input {
+    display: none;
+}
+
+.abmtb-toolbar__button {
+    min-width: 160px;
+}
+
+.abmtb-toolbar__hint {
+    color: #646970;
+    font-size: 13px;
+}
+
+/* Toast */
+.abmtb-toast {
+    padding: 10px 14px;
+    border-radius: 4px;
+    background: #f0f0f1;
+    border-left: 4px solid #2271b1;
+    color: #1d2327;
+    font-size: 13px;
+}
+
+.abmtb-toast--success {
+    background: #f0f6e6;
+    border-left-color: #00a32a;
+}
+
+.abmtb-toast--error {
+    background: #fcf0f1;
+    border-left-color: #d63638;
+}
+
+/* Three-column grid */
+.abmtb-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+    align-items: stretch;
+}
+
+@media (max-width: 1280px) {
+    .abmtb-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .abmtb-column--usage {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 960px) {
+    .abmtb-grid {
+        grid-template-columns: 1fr;
+    }
+    .abmtb-column--usage {
+        grid-column: auto;
+    }
+}
+
+.abmtb-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    min-height: 200px;
+}
+
+.abmtb-column__title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.abmtb-empty {
+    margin: 0;
+    color: #646970;
+    font-style: italic;
+}
+
+/* Source column — pre and textarea must share dimensions so the swap on
+   click-to-edit is visually seamless. */
+.abmtb-source,
+.abmtb-source-edit {
+    margin: 0;
+    width: 100%;
+    min-height: 60vh;
+    max-height: 75vh;
+    padding: 12px;
+    border-radius: 4px;
+    font-family: Consolas, Monaco, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #1d2327;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+.abmtb-source {
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    white-space: pre-wrap;
+    word-break: break-word;
+    cursor: text;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.abmtb-source:hover {
+    background: #fff;
+    box-shadow: inset 0 0 0 1px #c3c4c7;
+}
+
+.abmtb-source-edit {
+    background: #fff;
+    border: 1px solid #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    resize: vertical;
+}
+
+.abmtb-source-edit:focus {
+    outline: none;
+}
+
+.abmtb-source__status {
+    font-size: 12px;
+    font-weight: 400;
+    color: #2271b1;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 6px;
+}
+
+.abmtb-source__hint {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 400;
+    color: #646970;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.abmtb-source__actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: -4px 0 0;
+}
+
+.abmtb-source__action {
+    font-size: 12px;
+}
+
+/* Parser column */
+.abmtb-levels {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.abmtb-level {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    transition: opacity 0.15s ease;
+}
+
+.abmtb-level--disabled {
+    opacity: 0.55;
+}
+
+.abmtb-level__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.abmtb-level__tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 28px;
+    padding: 0 8px;
+    background: #2271b1;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.abmtb-level__input {
+    flex: 1;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+    font-size: 14px;
+    background: #fff;
+    color: #1d2327;
+}
+
+.abmtb-level__input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.abmtb-level__input:disabled {
+    background: #f6f7f7;
+    cursor: not-allowed;
+}
+
+.abmtb-level__saving {
+    color: #646970;
+    font-size: 12px;
+}
+
+.abmtb-level__tokens {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding-left: 56px;
+}
+
+.abmtb-level__tokens-label {
+    min-width: 70px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #646970;
+}
+
+.abmtb-level__token {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    font-family: Consolas, Monaco, "Courier New", monospace;
+    font-size: 12px;
+    color: #2271b1;
+}
+
+.abmtb-level__date {
+    padding-left: 56px;
+}
+
+.abmtb-level__date-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #1d2327;
+}
+
+.abmtb-level__date-label > span {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #646970;
+}
+
+.abmtb-level__date-select {
+    height: 28px;
+    padding: 0 8px;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+    background: #fff;
+    color: #1d2327;
+    font-size: 13px;
+    min-width: 220px;
+}
+
+.abmtb-level__date-select:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.abmtb-level__date-select:disabled {
+    background: #f6f7f7;
+    cursor: not-allowed;
+}
+
+/* Switch (styled checkbox) */
+.abmtb-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.abmtb-switch input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+}
+
+.abmtb-switch__slider {
+    position: absolute;
+    inset: 0;
+    background: #c3c4c7;
+    border-radius: 20px;
+    transition: background 0.15s ease;
+}
+
+.abmtb-switch__slider::before {
+    content: "";
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.15s ease;
+}
+
+.abmtb-switch input:checked + .abmtb-switch__slider {
+    background: #2271b1;
+}
+
+.abmtb-switch input:checked + .abmtb-switch__slider::before {
+    transform: translateX(16px);
+}
+
+.abmtb-switch input:focus-visible + .abmtb-switch__slider {
+    box-shadow: 0 0 0 2px #2271b1;
+}
+
+/* Accordions */
+.abmtb-accordions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #dcdcde;
+}
+
+.abmtb-accordion {
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.abmtb-accordion[open] {
+    background: #fff;
+}
+
+.abmtb-accordion__summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #1d2327;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.abmtb-accordion__summary::-webkit-details-marker {
+    display: none;
+}
+
+.abmtb-accordion__summary::after {
+    content: "+";
+    color: #646970;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+    width: 14px;
+    text-align: center;
+}
+
+.abmtb-accordion[open] .abmtb-accordion__summary::after {
+    content: "−";
+}
+
+.abmtb-accordion__summary:focus-visible {
+    outline: 2px solid #2271b1;
+    outline-offset: -2px;
+}
+
+.abmtb-accordion__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 14px 14px;
+}
+
+.abmtb-accordion__intro {
+    margin: 0;
+    color: #1d2327;
+    font-size: 13px;
+}
+
+.abmtb-accordion__heading {
+    margin: 6px 0 0;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #646970;
+}
+
+.abmtb-accordion__hint {
+    margin: 0;
+    color: #646970;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.abmtb-accordion__list {
+    margin: 0;
+    padding-left: 18px;
+    color: #1d2327;
+    font-size: 13px;
+}
+
+.abmtb-accordion__list code {
+    background: #f6f7f7;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+/* Bricks queries list (kept inside the first accordion) */
+.abmtb-queries__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.abmtb-queries__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+}
+
+.abmtb-queries__id {
+    font-family: Consolas, Monaco, "Courier New", monospace;
+    font-size: 13px;
+    color: #2271b1;
+    background: transparent;
+    padding: 0;
+    flex: 1;
+}
+
+.abmtb-queries__level {
+    color: #646970;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Code blocks for shortcode examples */
+.abmtb-codeblock {
+    margin: 0;
+    padding: 10px 12px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    font-family: Consolas, Monaco, "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #1d2327;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+}
+
+.abmtb-codeblock code {
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+}

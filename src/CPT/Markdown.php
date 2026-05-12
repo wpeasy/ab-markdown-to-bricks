@@ -13,7 +13,7 @@ namespace AB\MarkdownToBricks\CPT;
 defined('ABSPATH') || exit;
 
 /**
- * Registers the abmtb_markdown CPT under the Bricks admin menu.
+ * Registers the abmtb_markdown CPT as its own top-level admin menu.
  */
 final class Markdown {
 
@@ -23,9 +23,8 @@ final class Markdown {
      * Register hooks.
      */
     public static function init(): void {
-        // Priority 11 — runs after Bricks registers its top-level 'bricks' menu
-        // on the default priority, so show_in_menu => 'bricks' resolves.
-        add_action('init', [self::class, 'register'], 11);
+        add_action('init', [self::class, 'register']);
+        add_action('pre_get_posts', [self::class, 'block_public_queries']);
     }
 
     /**
@@ -33,9 +32,9 @@ final class Markdown {
      */
     public static function register(): void {
         $labels = [
-            'name'                  => _x('Markdown', 'post type general name', 'ab-markdown-to-bricks'),
+            'name'                  => _x('Markdown Parser', 'post type general name', 'ab-markdown-to-bricks'),
             'singular_name'         => _x('Markdown', 'post type singular name', 'ab-markdown-to-bricks'),
-            'menu_name'             => _x('Markdown', 'admin menu', 'ab-markdown-to-bricks'),
+            'menu_name'             => _x('Markdown Parser', 'admin menu', 'ab-markdown-to-bricks'),
             'name_admin_bar'        => _x('Markdown', 'add new on admin bar', 'ab-markdown-to-bricks'),
             'add_new'               => __('Add New', 'ab-markdown-to-bricks'),
             'add_new_item'          => __('Add New Markdown', 'ab-markdown-to-bricks'),
@@ -48,11 +47,19 @@ final class Markdown {
             'not_found_in_trash'    => __('No markdown found in Trash.', 'ab-markdown-to-bricks'),
         ];
 
+        // Privacy stance: this CPT is admin-only. It stores raw source
+        // content that should only be exposed through our own parsers
+        // (Bricks tokens/queries, WP shortcodes). It must not appear in
+        // public WP_Query results, search, REST, sitemaps, or have its
+        // own front-end URL.
         register_post_type(self::POST_TYPE, [
             'labels'              => $labels,
             'public'              => false,
+            'publicly_queryable'  => false,
             'show_ui'             => true,
-            'show_in_menu'        => 'bricks',
+            'show_in_menu'        => true,
+            'menu_position'       => 25,
+            'menu_icon'           => 'dashicons-media-text',
             'show_in_admin_bar'   => false,
             'show_in_nav_menus'   => false,
             'show_in_rest'        => false,
@@ -60,9 +67,31 @@ final class Markdown {
             'rewrite'             => false,
             'query_var'           => false,
             'exclude_from_search' => true,
+            'can_export'          => true,
             'capability_type'     => 'post',
             'map_meta_cap'        => true,
             'supports'            => ['title'],
         ]);
+    }
+
+    /**
+     * Belt-and-braces guard: drop this CPT from any unsuppressed
+     * front-end main query that has slipped through, in case a theme
+     * or third-party plugin explicitly asks for it.
+     *
+     * Our own parsers should set `suppress_filters => true` (or use
+     * `get_posts()` with that arg) when reading this data internally.
+     */
+    public static function block_public_queries(\WP_Query $query): void {
+        if (is_admin() || !$query->is_main_query()) {
+            return;
+        }
+        $requested = (array) $query->get('post_type');
+        if (in_array(self::POST_TYPE, $requested, true)) {
+            $query->set(
+                'post_type',
+                array_values(array_diff($requested, [self::POST_TYPE]))
+            );
+        }
     }
 }
